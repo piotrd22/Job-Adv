@@ -5,6 +5,7 @@ import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum';
 import { AuthDto } from '../src/auth/dto';
 import { EditUserDto } from '../src/user/dto';
+import { JobDto, JobEditDto } from 'src/job/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -241,6 +242,160 @@ describe('App e2e', () => {
           })
           .expectStatus(404);
       });
+    });
+  });
+
+  describe('Job', () => {
+    describe('Get all', () => {
+      it('should get all jobs', () => {
+        return pactum.spec().get('jobs?skip=0').expectStatus(200);
+      });
+    });
+
+    describe('Create', () => {
+      const dto: JobDto = {
+        title: 'cool',
+        description: 'cool work',
+        tech: 'JS',
+        position: 'Junior',
+      };
+
+      it('should not create job bc unathorized', () => {
+        return pactum.spec().post('jobs').expectStatus(401);
+      });
+
+      it('should create job', () => {
+        return pactum
+          .spec()
+          .post('jobs')
+          .withBody(dto)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(201)
+          .stores('jobId', 'id');
+      });
+
+      it('should create job', () => {
+        return pactum
+          .spec()
+          .post('jobs')
+          .withBody(dto)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(201);
+      });
+
+      it('should get two job', () => {
+        return pactum
+          .spec()
+          .get('jobs?skip=0')
+          .expectStatus(200)
+          .expectJsonLength(2);
+      });
+
+      it('should get my jobs (2)', () => {
+        return pactum
+          .spec()
+          .get('jobs/my')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectJsonLength(2);
+      });
+
+      it('should get job by id', () => {
+        return pactum
+          .spec()
+          .get('jobs/{id}')
+          .withPathParams('id', '$S{jobId}')
+          .expectStatus(200)
+          .expectBodyContains('$S{jobId}');
+      });
+    });
+
+    describe('Update', () => {
+      const dto: JobEditDto = {
+        title: 'ezz',
+        description: 'loool',
+      };
+      it('should not edit job', () => {
+        return pactum
+          .spec()
+          .patch('jobs/{id}')
+          .withPathParams('id', '$S{jobId}')
+          .withBody(dto)
+          .expectStatus(401);
+      });
+
+      it('should edit job', () => {
+        return pactum
+          .spec()
+          .patch('jobs/{id}')
+          .withPathParams('id', '$S{jobId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(200)
+          .expectBodyContains(dto.title)
+          .expectBodyContains(dto.description);
+      });
+    });
+
+    describe('Delete', () => {
+      it('should not delete job', () => {
+        return pactum
+          .spec()
+          .delete('jobs/{id}')
+          .withPathParams('id', '$S{jobId}')
+          .expectStatus(401);
+      });
+
+      it('should delete job', () => {
+        return pactum
+          .spec()
+          .delete('jobs/{id}')
+          .withPathParams('id', '$S{jobId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200);
+      });
+
+      it('should get 1 job', () => {
+        return pactum
+          .spec()
+          .get('jobs?skip=0')
+          .expectStatus(200)
+          .expectJsonLength(1);
+      });
+    });
+  });
+
+  describe('Delete all', () => {
+    it('should delete user', () => {
+      return pactum
+        .spec()
+        .delete('users/profile')
+        .withHeaders({
+          Authorization: 'Bearer $S{userAt}',
+        })
+        .expectStatus(200);
+    });
+
+    it('should get empty jobs', () => {
+      return pactum
+        .spec()
+        .get('jobs?skip=0')
+        .expectStatus(200)
+        .expectJsonLength(0);
+    });
+
+    it('should get empty users', () => {
+      return pactum.spec().get('users').expectStatus(200).expectJsonLength(0);
     });
   });
 });

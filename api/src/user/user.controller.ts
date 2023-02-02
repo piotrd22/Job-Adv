@@ -34,7 +34,7 @@ export class UserController {
     return this.userService.updateProfile(userId, dto);
   }
 
-  @Get('/:id')
+  @Get(':id')
   getUserById(@Param('id', ParseIntPipe) id: number) {
     return this.userService.getUserById(id);
   }
