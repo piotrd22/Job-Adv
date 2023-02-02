@@ -4,6 +4,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum';
 import { AuthDto } from '../src/auth/dto';
+import { EditUserDto } from '../src/user/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -65,6 +66,25 @@ describe('App e2e', () => {
           .withBody(dto)
           .expectStatus(201);
       });
+
+      it('should not signup bc same credentials', () => {
+        return pactum
+          .spec()
+          .post('auth/signup')
+          .withBody(dto)
+          .expectStatus(403);
+      });
+
+      it('should signup 2', () => {
+        return pactum
+          .spec()
+          .post('auth/signup')
+          .withBody({
+            email: 'mail@wp.com',
+            password: dto.password,
+          })
+          .expectStatus(201);
+      });
     });
 
     describe('Signin', () => {
@@ -117,12 +137,110 @@ describe('App e2e', () => {
           .spec()
           .post('auth/signin')
           .withBody(dto)
-          .expectStatus(200);
+          .expectStatus(200)
+          .stores('userAt', 'access_token');
+      });
+
+      it('should signin 2', () => {
+        return pactum
+          .spec()
+          .post('auth/signin')
+          .withBody({
+            email: 'mail@wp.com',
+            password: dto.password,
+          })
+          .expectStatus(200)
+          .stores('userAt2', 'access_token');
       });
     });
   });
 
   describe('User', () => {
-    describe('Profile', () => {});
+    describe('Get profile', () => {
+      it('should not get current user bc unauthorized', () => {
+        return pactum.spec().get('users/profile').expectStatus(401);
+      });
+
+      it('should not get current user bc unauthorized v2', () => {
+        return pactum
+          .spec()
+          .get('users/profile')
+          .withHeaders({
+            Authorization: 'Bearer dklasgfilausghdliu046378013624',
+          })
+          .expectStatus(401);
+      });
+
+      it('should get current user', () => {
+        return pactum
+          .spec()
+          .get('users/profile')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200);
+      });
+    });
+
+    describe('Edit user', () => {
+      const dto: EditUserDto = {
+        name: 'Piotr',
+        email: 'mail@wp.io',
+      };
+      it('should not edit user bc credentials taken', () => {
+        return pactum
+          .spec()
+          .patch('users/profile')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            name: dto.name,
+            email: 'mail@wp.com',
+          })
+          .expectStatus(403);
+      });
+
+      it('should edit user', () => {
+        return pactum
+          .spec()
+          .patch('users/profile')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(200)
+          .expectBodyContains(dto.name)
+          .expectBodyContains(dto.email);
+      });
+    });
+
+    describe('Delete user', () => {
+      it('should delete user', () => {
+        return pactum
+          .spec()
+          .delete('users/profile')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt2}',
+          })
+          .expectStatus(200);
+      });
+    });
+
+    describe('Get users', () => {
+      it('should get all users', () => {
+        return pactum.spec().get('users').expectStatus(200);
+      });
+
+      it('should not get deleted user', () => {
+        return pactum
+          .spec()
+          .get('users/profile')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt2}',
+          })
+          .expectStatus(500);
+      });
+    });
   });
 });

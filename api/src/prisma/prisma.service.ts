@@ -17,4 +17,16 @@ export class PrismaService extends PrismaClient {
   cleanDb() {
     return this.$transaction([this.user.deleteMany()]);
   }
+
+  exclude<User, Key extends keyof User>(
+    users: User[],
+    keys: Key[],
+  ): Omit<User[], Key> {
+    for (let user of users) {
+      for (let key of keys) {
+        delete user[key];
+      }
+    }
+    return users;
+  }
 }
