@@ -239,7 +239,7 @@ describe('App e2e', () => {
           .withHeaders({
             Authorization: 'Bearer $S{userAt2}',
           })
-          .expectStatus(500);
+          .expectStatus(404);
       });
     });
   });
