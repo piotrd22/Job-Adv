@@ -27,6 +27,7 @@ model Job {
   title       String
   description String
   tech        String
+  position    String
   userId      Int
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
