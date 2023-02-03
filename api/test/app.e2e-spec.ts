@@ -139,7 +139,8 @@ describe('App e2e', () => {
           .post('auth/signin')
           .withBody(dto)
           .expectStatus(200)
-          .stores('userAt', 'access_token');
+          .stores('userAt', 'access_token')
+          .stores('userRt', 'refresh_token');
       });
 
       it('should signin 2', () => {
@@ -151,7 +152,64 @@ describe('App e2e', () => {
             password: dto.password,
           })
           .expectStatus(200)
-          .stores('userAt2', 'access_token');
+          .stores('userAt2', 'access_token')
+          .stores('userRt2', 'refresh_token');
+      });
+    });
+
+    describe('Logout, refresh', () => {
+      it('should refresh tokens', async () => {
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(true);
+          }, 1000);
+        });
+
+        return pactum
+          .spec()
+          .post('auth/refresh')
+          .withHeaders({
+            Authorization: 'Bearer $S{userRt}',
+          })
+          .expectStatus(200)
+          .stores('userAt', 'access_token')
+          .stores('userRt', 'refresh_token');
+      });
+
+      it('should not refresh tokens', async () => {
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(true);
+          }, 1000);
+        });
+
+        return pactum
+          .spec()
+          .post('auth/refresh')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(401);
+      });
+
+      it('should logout', () => {
+        return pactum
+          .spec()
+          .post('auth/logout')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200);
+      });
+
+      it('should signin', () => {
+        return pactum
+          .spec()
+          .post('auth/signin')
+          .withBody(dto)
+          .expectStatus(200)
+          .stores('userAt', 'access_token')
+          .stores('userRt', 'refresh_token');
       });
     });
   });

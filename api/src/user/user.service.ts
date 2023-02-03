@@ -1,4 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaService } from '../prisma/prisma.service';
 import { EditUserDto } from './dto';
@@ -7,7 +8,7 @@ import { EditUserDto } from './dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllUsers() {
+  async getAllUsers(): Promise<Omit<User[], 'password'>> {
     try {
       const users = await this.prisma.user.findMany();
       return this.prisma.exclude(users, ['password']);
@@ -16,7 +17,7 @@ export class UserService {
     }
   }
 
-  async getUserById(id: number) {
+  async getUserById(id: number): Promise<User> {
     try {
       const user = await this.prisma.user.findUnique({
         where: {
@@ -30,7 +31,7 @@ export class UserService {
     }
   }
 
-  async deleteProfile(userId: number) {
+  async deleteProfile(userId: number): Promise<string> {
     try {
       await this.prisma.user.delete({
         where: {
@@ -44,7 +45,7 @@ export class UserService {
     }
   }
 
-  async updateProfile(userId: number, dto: EditUserDto) {
+  async updateProfile(userId: number, dto: EditUserDto): Promise<User> {
     try {
       const user = await this.prisma.user.update({
         where: {

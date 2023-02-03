@@ -12,30 +12,33 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  getAllUsers() {
+  getAllUsers(): Promise<Omit<User[], 'password'>> {
     return this.userService.getAllUsers();
   }
 
   @UseGuards(JwtGuard)
   @Get('profile')
-  getProfile(@GetUser() user: User) {
+  getProfile(@GetUser() user: User): User {
     return user;
   }
 
   @UseGuards(JwtGuard)
   @Delete('profile')
-  deleteProfile(@GetUser('id') userId: number) {
+  deleteProfile(@GetUser('id') userId: number): Promise<string> {
     return this.userService.deleteProfile(userId);
   }
 
   @UseGuards(JwtGuard)
   @Patch('profile')
-  updateProfile(@GetUser('id') userId: number, @Body() dto: EditUserDto) {
+  updateProfile(
+    @GetUser('id') userId: number,
+    @Body() dto: EditUserDto,
+  ): Promise<User> {
     return this.userService.updateProfile(userId, dto);
   }
 
   @Get(':id')
-  getUserById(@Param('id', ParseIntPipe) id: number) {
+  getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.userService.getUserById(id);
   }
 }

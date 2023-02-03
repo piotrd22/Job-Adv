@@ -15,6 +15,7 @@ model User {
   password    String
   name        String?
   description String?
+  refreshT    String?
   jobs        Job[]
 
   @@map("users")
