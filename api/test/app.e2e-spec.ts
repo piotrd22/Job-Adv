@@ -202,6 +202,22 @@ describe('App e2e', () => {
           .expectStatus(200);
       });
 
+      it('should not refresh tokens', async () => {
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(true);
+          }, 1000);
+        });
+
+        return pactum
+          .spec()
+          .post('auth/refresh')
+          .withHeaders({
+            Authorization: 'Bearer $S{userRt}',
+          })
+          .expectStatus(403);
+      });
+
       it('should signin', () => {
         return pactum
           .spec()
