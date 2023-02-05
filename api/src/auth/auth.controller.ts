@@ -29,6 +29,7 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtGuard)
   @Post('logout')
   logout(@GetUser('id') id: number): Promise<boolean> {
     return this.authService.logout(id);
