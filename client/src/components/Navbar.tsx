@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
-import { FiUser, FiLogOut, FiSettings, FiLogIn } from "react-icons/fi";
+import { FiUser, FiLogOut, FiList, FiLogIn } from "react-icons/fi";
 
 function Navbar() {
   const { user } = useAppSelector((state) => state.auth);
@@ -16,7 +16,7 @@ function Navbar() {
           {!user && (
             <li tabIndex={0} className="relative">
               <a>
-                <FiSettings className="text-4xl" />
+                <FiList className="text-4xl" />
               </a>
               <ul className="p-2 border-base-300 bg-base-100 absolute right-0 border z-50">
                 <li>
@@ -26,7 +26,7 @@ function Navbar() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/">
+                  <Link to="/signup">
                     <FiLogOut className="text-4xl mx-3" />
                     SignUp
                   </Link>
@@ -37,7 +37,7 @@ function Navbar() {
           {user && (
             <li tabIndex={0} className="relative">
               <a>
-                <FiSettings className="text-4xl" />
+                <FiList className="text-4xl" />
               </a>
               <ul className="p-2 border-base-300 bg-base-100 absolute right-0 border z-50">
                 <li>

@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import { useAppSelector } from "./app/hooks";
 import Signin from "./pages/Signin";
+import Signup from "./pages/Signup";
 
 function App() {
   const { user } = useAppSelector((state) => state.auth);
@@ -28,6 +29,10 @@ function App() {
         <Route
           path="/signin"
           element={user ? <Navigate to="/" /> : <Signin />}
+        />
+        <Route
+          path="/signup"
+          element={user ? <Navigate to="/" /> : <Signup />}
         />
       </Routes>
     </div>

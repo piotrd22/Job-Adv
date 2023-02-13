@@ -1,15 +1,25 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { signin } from "../features/auth/authSlice";
-import { useState } from "react";
+import { toast } from "react-toastify";
 import { useAppDispatch } from "../app/hooks";
 import { LoginForm } from "../types/LoginForm";
 
 function Signin() {
-  const [isFailed, setIsFailed] = useState(false);
-
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const notifyError = (error: string) =>
+    toast.error(error, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
 
   const {
     register,
@@ -28,7 +38,6 @@ function Signin() {
       .unwrap()
       .then(() => {
         reset();
-        setIsFailed(false);
         navigate("/");
       })
       .catch((error) => {
@@ -38,7 +47,7 @@ function Signin() {
             error.response.status === 401 ||
             error.response.status === 400
           ) {
-            setIsFailed(true);
+            notifyError("Login failed!");
           }
         } else alert(error);
       });
@@ -66,9 +75,6 @@ function Signin() {
         {errors.password && <div className="my-2">This field is required!</div>}
 
         <button className="btn my-5 mx-auto flex">LOGIN</button>
-        {isFailed && (
-          <div className="my-4 text-center text-xl">Login failed!</div>
-        )}
       </form>
     </div>
   );
