@@ -178,11 +178,7 @@ function Profile() {
         fetchDeleteAccount()
           .then(() => {
             navigate("/");
-            dispatch(logout())
-              .unwrap()
-              .catch((error) => {
-                alert(error);
-              });
+            localStorage.removeItem("tokens");
             refreshPage();
           })
           .catch((error) => {
