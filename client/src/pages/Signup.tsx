@@ -55,7 +55,7 @@ function Signup() {
       .then(() => {
         notify();
         reset();
-        navigate("/");
+        navigate("/signin");
       })
       .catch((error) => {
         if (error.response.status) {

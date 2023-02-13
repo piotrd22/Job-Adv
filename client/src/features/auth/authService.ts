@@ -16,7 +16,7 @@ const signin = async (user: LoginForm): Promise<Tokens> => {
     user
   );
   if (res.data) {
-    window.localStorage.setItem("tokens", JSON.stringify(res.data));
+    localStorage.setItem("tokens", JSON.stringify(res.data));
   }
   return res.data;
 };
@@ -27,7 +27,7 @@ const logout = async () => {
   if (tokens) {
     const config = {
       headers: {
-        token: "Bearer " + tokens.access_token,
+        Authorization: "Bearer " + tokens.access_token,
       },
     };
     await axios.post(`${import.meta.env.VITE_PORT}/auth/logout`, config);
