@@ -16,7 +16,7 @@ const signin = async (user: LoginForm): Promise<Tokens> => {
     user
   );
   if (res.data) {
-    localStorage.setItem("tokens", JSON.stringify(res.data));
+    window.localStorage.setItem("tokens", JSON.stringify(res.data));
   }
   return res.data;
 };

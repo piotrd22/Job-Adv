@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { LoginForm } from "../../types/LoginForm";
+import { Tokens } from "../../types/Tokens";
 import authService from "./authService";
 
 const tokens = localStorage.getItem("tokens");
-const user = tokens ? JSON.parse(tokens) : undefined;
+const user: Tokens | undefined = tokens ? JSON.parse(tokens) : undefined;
 
 const initialState = {
   user: user ? user : null,
@@ -32,8 +33,12 @@ export const signin = createAsyncThunk(
   }
 );
 
-export const logout = createAsyncThunk("auth/logout", async () => {
-  await authService.logout();
+export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
+  try {
+    return await authService.logout();
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error);
+  }
 });
 
 export const authSlice = createSlice({

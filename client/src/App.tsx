@@ -1,9 +1,13 @@
 import Navbar from "./components/Navbar";
 import { ToastContainer } from "react-toastify";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
+import { useAppSelector } from "./app/hooks";
+import Signin from "./pages/Signin";
 
 function App() {
+  const { user } = useAppSelector((state) => state.auth);
+
   return (
     <div className="App">
       <Navbar />
@@ -21,6 +25,10 @@ function App() {
       />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route
+          path="/signin"
+          element={user ? <Navigate to="/" /> : <Signin />}
+        />
       </Routes>
     </div>
   );

@@ -20,7 +20,7 @@ function Navbar() {
               </a>
               <ul className="p-2 border-base-300 bg-base-100 absolute right-0 border z-50">
                 <li>
-                  <Link to="/">
+                  <Link to="/signin">
                     <FiLogIn className="text-4xl mx-3" />
                     LogIn
                   </Link>

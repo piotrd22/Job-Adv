@@ -28,30 +28,34 @@ const refreshTokens = async () => {
 
 export const checkTokenExpirationMiddleware: Middleware<{}, RootState> =
   (storeApi) => (next) => (action) => {
-    const token: string =
-      JSON.parse(localStorage.getItem("tokens") || "") &&
-      JSON.parse(localStorage.getItem("tokens") || "")["accessToken"];
-    const refreshToken: string =
-      JSON.parse(localStorage.getItem("tokens") || "") &&
-      JSON.parse(localStorage.getItem("tokens") || "")["refreshToken"];
+    const values = localStorage.getItem("tokens");
+    const tokens: Tokens | undefined = values ? JSON.parse(values) : undefined;
 
-    if (!token) next(action);
+    if (!tokens) next(action);
+    else {
+      const token = tokens.access_token;
+      const refreshToken = tokens.refresh_token;
 
-    const decodedToken: JwtPayload = jwt_decode(token);
-    const decodedRefreshToken: JwtPayload = jwt_decode(refreshToken);
-    if ((decodedToken?.exp as JwtPayload) < new Date(Date.now() - 1000 * 60)) {
-      if ((decodedRefreshToken?.exp as JwtPayload) < new Date().getTime()) {
+      const decodedToken: JwtPayload = jwt_decode(token);
+      const decodedRefreshToken: JwtPayload = jwt_decode(refreshToken);
+
+      if (
+        (decodedToken?.exp as JwtPayload) <
+        ((Date.now() / -1000) * 120) / 1000
+      ) {
+        if ((decodedRefreshToken?.exp as JwtPayload) < new Date().getTime()) {
+          localStorage.clear();
+          refreshPage();
+          next(action);
+        } else {
+          refreshTokens();
+          next(action);
+        }
+      } else if ((decodedToken?.exp as JwtPayload) < Date.now() / 1000) {
         localStorage.clear();
         refreshPage();
         next(action);
-      } else {
-        refreshTokens();
-        next(action);
       }
-    } else if ((decodedToken?.exp as JwtPayload) < new Date().getTime()) {
-      localStorage.clear();
-      refreshPage();
       next(action);
     }
-    next(action);
   };
