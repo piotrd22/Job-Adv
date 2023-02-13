@@ -21,16 +21,14 @@ const signin = async (user: LoginForm): Promise<Tokens> => {
   return res.data;
 };
 
-const logout = async () => {
-  const value = localStorage.getItem("tokens");
-  const tokens: Tokens | undefined = value ? JSON.parse(value) : undefined;
-  if (tokens) {
+const logout = async (token: string) => {
+  if (token) {
     const config = {
       headers: {
-        Authorization: "Bearer " + tokens.access_token,
+        Authorization: "Bearer " + token,
       },
     };
-    await axios.post(`${import.meta.env.VITE_PORT}/auth/logout`, config);
+    await axios.post(`${import.meta.env.VITE_PORT}/auth/logout`, {}, config);
   }
   localStorage.removeItem("tokens");
 };

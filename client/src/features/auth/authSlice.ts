@@ -33,13 +33,16 @@ export const signin = createAsyncThunk(
   }
 );
 
-export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
-  try {
-    return await authService.logout();
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error);
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async (token: string, thunkAPI) => {
+    try {
+      return await authService.logout(token);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
   }
-});
+);
 
 export const authSlice = createSlice({
   name: "auth",

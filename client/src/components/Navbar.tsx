@@ -1,9 +1,24 @@
-import { Link } from "react-router-dom";
-import { useAppSelector } from "../app/hooks";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { FiUser, FiLogOut, FiList, FiLogIn } from "react-icons/fi";
+import { logout } from "../features/auth/authSlice";
 
 function Navbar() {
   const { user } = useAppSelector((state) => state.auth);
+
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const logoutHandler = () => {
+    if (user) {
+      dispatch(logout(user.access_token))
+        .unwrap()
+        .then(() => navigate("/"))
+        .catch((error) => {
+          alert(error);
+        });
+    }
+  };
 
   return (
     <nav className="navbar border-b bordered border-base-300 bg-base-100 mb-5">
@@ -47,7 +62,7 @@ function Navbar() {
                   </Link>
                 </li>
                 <li>
-                  <button>
+                  <button onClick={logoutHandler}>
                     <FiLogOut className="text-4xl mx-3 cursor-pointer" />
                     Logout
                   </button>

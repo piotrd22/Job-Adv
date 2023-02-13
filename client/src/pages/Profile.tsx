@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { logout } from "../features/auth/authSlice";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,7 +14,6 @@ function Profile() {
   const [password, setPassword] = useState("");
   const [initialState, setInitialState] = useState({});
 
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const notifyUpdate = () => {
@@ -243,7 +241,7 @@ function Profile() {
         {errors.description && (
           <div className="my-2">{errors.description.message}</div>
         )}
-        <button className="btn my-5 mx-auto flex">UPDATE</button>
+        <button className="btn btn-primary my-5 mx-auto flex">UPDATE</button>
       </form>
       <div className="sm:w-full lg:w-1/2 flex flex-col justify-items-center mx-auto">
         <h4 className="self-center">Delete account</h4>
@@ -251,7 +249,10 @@ function Profile() {
           Once you delete your account, there is no going back. Please be
           certain.
         </p>
-        <button className="btn my-5 mx-auto flex" onClick={deleteAccount}>
+        <button
+          className="btn btn-warning my-5 mx-auto flex"
+          onClick={deleteAccount}
+        >
           DELETE YOUR ACCOUNT
         </button>
       </div>

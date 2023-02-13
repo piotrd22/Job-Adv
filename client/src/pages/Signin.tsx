@@ -55,6 +55,7 @@ function Signin() {
 
   return (
     <div className="container mx-auto p-5">
+      <h1 className="text-center mt-3 mb-3 text-3xl">SIGN IN</h1>
       <form
         className="sm:w-full lg:w-1/2 flex flex-col justify-items-center mx-auto"
         onSubmit={handleSubmit(onSubmit)}
@@ -74,7 +75,7 @@ function Signin() {
         />
         {errors.password && <div className="my-2">This field is required!</div>}
 
-        <button className="btn my-5 mx-auto flex">LOGIN</button>
+        <button className="btn btn-primary my-5 mx-auto flex">LOGIN</button>
       </form>
     </div>
   );
