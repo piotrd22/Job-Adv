@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { AiOutlineArrowUp } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
 import { ImBin, ImOffice } from "react-icons/im";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 import { useAppSelector } from "../app/hooks";
 import Loader from "../components/Loader";
 import { Job } from "../types/Job";
@@ -12,9 +13,10 @@ import { User } from "../types/User";
 
 function More() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [job, setJob] = useState<Job>({
-    id: "",
+    id: -1,
     createdAt: "",
     updatedAt: "",
     title: "",
@@ -85,6 +87,23 @@ function More() {
     }
   };
 
+  const deleteJob = async () => {
+    if (user) {
+      const config = {
+        headers: {
+          Authorization: "Bearer " + user.access_token,
+        },
+      };
+
+      const res = await axios.delete(
+        `${import.meta.env.VITE_PORT}/jobs/${job.id}`,
+        config
+      );
+
+      return res.data;
+    }
+  };
+
   const getUserById = async (id: number) => {
     const res = await axios.get(`${import.meta.env.VITE_PORT}/users/${id}`);
     return res.data;
@@ -140,6 +159,30 @@ function More() {
     });
   };
 
+  const handleDelete = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteJob()
+          .then(() => {
+            notify();
+            navigate("/");
+          })
+          .catch((error) => {
+            notifyError();
+            console.log(error);
+          });
+      }
+    });
+  };
+
   if (isLoading) return <Loader />;
 
   return (
@@ -152,7 +195,7 @@ function More() {
           <Link to={`/update-job/${id}`}>
             <FiEdit className="mx-5 cursor-pointer" />
           </Link>
-          <ImBin className="cursor-pointer" />
+          <ImBin className="cursor-pointer" onClick={handleDelete} />
         </div>
       )}
       <div className="flex flex-col justify-items-center mt-6 border border-base-300 bg-base-100 rounded-box p-6 my-6">

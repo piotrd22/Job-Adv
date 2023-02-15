@@ -145,7 +145,7 @@ function Home() {
   }, [skip]);
 
   const jobComponents = jobs?.map((job: Job) => (
-    <OneJob key={job.id} job={job} />
+    <OneJob key={`${job.id}`} job={job} />
   ));
 
   if (isLoading) return <Loader />;
@@ -166,9 +166,9 @@ function Home() {
           <option value="python">Python</option>
           <option value="scala">Scala</option>
           <option value="go">Go</option>
-          <option value="c++">C++</option>
+          <option value="cpp">C++</option>
           <option value="c">C</option>
-          <option value="c#">C#</option>
+          <option value="csharp">C#</option>
           <option value="ruby">Ruby</option>
         </select>
         <select

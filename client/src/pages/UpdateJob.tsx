@@ -146,9 +146,9 @@ function UpdateJob() {
           <option value="python">Python</option>
           <option value="scala">Scala</option>
           <option value="go">Go</option>
-          <option value="c++">C++</option>
+          <option value="cpp">C++</option>
           <option value="c">C</option>
-          <option value="c#">C#</option>
+          <option value="csharp">C#</option>
           <option value="ruby">Ruby</option>
         </select>
         {errors.tech && <div className="my-2">{errors.tech.message}</div>}
