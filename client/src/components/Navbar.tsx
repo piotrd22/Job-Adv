@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { FiUser, FiLogOut, FiList, FiLogIn } from "react-icons/fi";
+import { FiUser, FiLogOut, FiList, FiLogIn, FiPlus } from "react-icons/fi";
 import { logout } from "../features/auth/authSlice";
 
 function Navbar() {
@@ -59,6 +59,12 @@ function Navbar() {
                   <Link to="/profile">
                     <FiUser className="text-4xl mx-3" />
                     Profile
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/add-job">
+                    <FiPlus className="text-4xl mx-3" />
+                    Add job
                   </Link>
                 </li>
                 <li>

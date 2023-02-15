@@ -3,6 +3,7 @@ import axios from "axios";
 import { Tokens } from "../types/Tokens";
 import { Middleware } from "redux";
 import { RootState } from "./store";
+import { changeUser } from "../features/auth/authSlice";
 
 const refreshPage = () => window.location.reload();
 
@@ -49,6 +50,11 @@ export const checkTokenExpirationMiddleware: Middleware<{}, RootState> =
           next(action);
         } else {
           refreshTokens();
+          const values = localStorage.getItem("tokens");
+          const tokens: Tokens | undefined = values
+            ? JSON.parse(values)
+            : undefined;
+          storeApi.dispatch(changeUser(tokens));
           next(action);
         }
       } else if ((decodedToken?.exp as JwtPayload) < Date.now() / 1000) {

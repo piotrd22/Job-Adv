@@ -6,6 +6,9 @@ import { useAppSelector } from "./app/hooks";
 import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
+import More from "./pages/More";
+import NotFound from "./pages/NotFound";
+import AddJob from "./pages/AddJob";
 
 function App() {
   const { user } = useAppSelector((state) => state.auth);
@@ -39,6 +42,12 @@ function App() {
           path="/profile"
           element={user ? <Profile /> : <Navigate to="/" />}
         />
+        <Route
+          path="/add-job"
+          element={user ? <AddJob /> : <Navigate to="/" />}
+        />
+        <Route path="/more/:id" element={<More />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );
