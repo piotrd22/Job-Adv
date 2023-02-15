@@ -10,6 +10,8 @@ import More from "./pages/More";
 import NotFound from "./pages/NotFound";
 import AddJob from "./pages/AddJob";
 import UpdateJob from "./pages/UpdateJob";
+import ProfileFeed from "./pages/ProfileFeed";
+import Me from "./pages/Me";
 
 function App() {
   const { user } = useAppSelector((state) => state.auth);
@@ -51,6 +53,8 @@ function App() {
           path="/update-job/:id"
           element={user ? <UpdateJob /> : <Navigate to="/" />}
         />
+        <Route path="/me" element={user ? <Me /> : <Navigate to="/" />} />
+        <Route path="/feed/:id" element={<ProfileFeed />} />
         <Route path="/more/:id" element={<More />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

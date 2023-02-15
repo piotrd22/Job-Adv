@@ -119,22 +119,13 @@ function More() {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      getUser()
-        .then((res: User) => {
-          setCurrUser(res);
-          setIsLoading(false);
-        })
-        .catch((error) => console.log(error));
-    } else {
-      getUserById(job.userId)
-        .then((res: User) => {
-          setCurrUser(res);
-          setIsLoading(false);
-        })
-        .catch((error) => console.log(error));
-    }
-  }, []);
+    getUserById(job.userId)
+      .then((res: User) => {
+        setCurrUser(res);
+        setIsLoading(false);
+      })
+      .catch((error) => console.log(error));
+  }, [job]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -209,7 +200,7 @@ function More() {
           <p className="whitespace-pre-wrap mt-5">{job.description}</p>
           <div className="flex justify-between items-end mt-5">
             <div className="mt-3 text-right flex">
-              <Link to={`/`}>
+              <Link to={`/feed/${currUser.id}`}>
                 <p className="flex items-center">
                   <ImOffice className="mr-3" />
                   {currUser.name}

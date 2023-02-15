@@ -29,8 +29,10 @@ const refreshTokens = async () => {
 
 export const checkTokenExpirationMiddleware: Middleware<{}, RootState> =
   (storeApi) => (next) => (action) => {
+    console.log("hahahahah");
     const values = localStorage.getItem("tokens");
     const tokens: Tokens | undefined = values ? JSON.parse(values) : undefined;
+    console.log(tokens);
 
     if (!tokens) next(action);
     else {
@@ -44,17 +46,19 @@ export const checkTokenExpirationMiddleware: Middleware<{}, RootState> =
         (decodedToken?.exp as JwtPayload) <
         ((Date.now() / -1000) * 120) / 1000
       ) {
+        console.log("cool");
         if ((decodedRefreshToken?.exp as JwtPayload) < new Date().getTime()) {
           localStorage.clear();
           refreshPage();
           next(action);
         } else {
-          refreshTokens();
-          const values = localStorage.getItem("tokens");
-          const tokens: Tokens | undefined = values
-            ? JSON.parse(values)
-            : undefined;
-          storeApi.dispatch(changeUser(tokens));
+          refreshTokens().then(() => {
+            const values = localStorage.getItem("tokens");
+            const tokens: Tokens | undefined = values
+              ? JSON.parse(values)
+              : undefined;
+            if (tokens) storeApi.dispatch(changeUser(tokens));
+          });
           next(action);
         }
       } else if ((decodedToken?.exp as JwtPayload) < Date.now() / 1000) {

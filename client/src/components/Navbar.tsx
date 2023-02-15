@@ -1,6 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { FiUser, FiLogOut, FiList, FiLogIn, FiPlus } from "react-icons/fi";
+import {
+  FiUser,
+  FiLogOut,
+  FiList,
+  FiLogIn,
+  FiPlus,
+  FiUpload,
+} from "react-icons/fi";
 import { logout } from "../features/auth/authSlice";
 
 function Navbar() {
@@ -56,9 +63,15 @@ function Navbar() {
               </a>
               <ul className="p-2 border-base-300 bg-base-100 absolute right-0 border z-50">
                 <li>
-                  <Link to="/profile">
+                  <Link to="/me">
                     <FiUser className="text-4xl mx-3" />
                     Profile
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/profile">
+                    <FiUpload className="text-4xl mx-3" />
+                    Update profile
                   </Link>
                 </li>
                 <li>

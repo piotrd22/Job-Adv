@@ -174,7 +174,7 @@ function UpdateJob() {
 
         <div className="flex justify-center">
           <button type="submit" className="btn btn-primary my-5 flex">
-            Add job
+            Update
           </button>
         </div>
       </form>
