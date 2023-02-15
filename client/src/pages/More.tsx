@@ -149,7 +149,7 @@ function More() {
       </Link>
       {currUser.id === job.userId && (
         <div className="flex justify-center mt-6">
-          <Link to={`/`}>
+          <Link to={`/update-job/${id}`}>
             <FiEdit className="mx-5 cursor-pointer" />
           </Link>
           <ImBin className="cursor-pointer" />
