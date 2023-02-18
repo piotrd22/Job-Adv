@@ -41,7 +41,10 @@ export const checkTokenExpirationMiddleware: Middleware<{}, RootState> =
         localStorage.clear();
         refreshPage();
         next(action);
-      } else if ((decodedToken?.exp as JwtPayload) < Date.now() / 1000) {
+      } else if (
+        (decodedToken?.exp as JwtPayload) <
+        (Date.now() - 1000 * 240) / 1000
+      ) {
         refreshTokens(refreshToken)
           .then(() => {
             const newvalues = localStorage.getItem("tokens");
