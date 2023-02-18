@@ -1,8 +1,9 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
+import jobReducer from "../features/job/jobSlice";
 import { checkTokenExpirationMiddleware } from "./middleware";
 
-const rootReducer = combineReducers({ auth: authReducer });
+const rootReducer = combineReducers({ auth: authReducer, job: jobReducer });
 
 export const store = configureStore({
   reducer: rootReducer,

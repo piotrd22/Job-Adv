@@ -1,12 +1,14 @@
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { postJob } from "../features/job/jobSlice";
 import { JobForm } from "../types/JobForm";
 
 function AddJob() {
+  const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
+
   const notify = () =>
     toast.success("Job has been added!", {
       position: "top-right",
@@ -32,24 +34,6 @@ function AddJob() {
     });
   };
 
-  const fetchPostJob = async (data: JobForm) => {
-    if (user) {
-      const config = {
-        headers: {
-          Authorization: "Bearer " + user.access_token,
-        },
-      };
-
-      const res = await axios.post(
-        `${import.meta.env.VITE_PORT}/jobs`,
-        data,
-        config
-      );
-
-      return res.data;
-    }
-  };
-
   const {
     register,
     handleSubmit,
@@ -65,15 +49,22 @@ function AddJob() {
   });
 
   const onSubmit = (data: JobForm) => {
-    fetchPostJob(data)
-      .then(() => {
-        notify();
-        reset();
-      })
-      .catch((error) => {
-        notifyError();
-        console.log(error);
-      });
+    if (user) {
+      const dataToSend = {
+        data: data,
+        tokens: user,
+      };
+      dispatch(postJob(dataToSend))
+        .unwrap()
+        .then(() => {
+          notify();
+          reset();
+        })
+        .catch((error) => {
+          notifyError();
+          console.log(error);
+        });
+    }
   };
 
   return (
