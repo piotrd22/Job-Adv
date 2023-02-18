@@ -4,13 +4,14 @@ import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
-import axios from "axios";
 import PasswordStrengthBar from "react-password-strength-bar";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { UserUpdate } from "../types/UserUpdate";
+import { deleteUser, getUser, updateUser } from "../features/user/userSlice";
 
 function Profile() {
   const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
   const [password, setPassword] = useState("");
   const [initialState, setInitialState] = useState({});
 
@@ -42,23 +43,6 @@ function Profile() {
     });
   };
 
-  const getUser = async () => {
-    if (user) {
-      const config = {
-        headers: {
-          Authorization: "Bearer " + user.access_token,
-        },
-      };
-
-      const res = await axios.get(
-        `${import.meta.env.VITE_PORT}/users/profile`,
-        config
-      );
-
-      return res.data;
-    }
-  };
-
   const {
     register,
     handleSubmit,
@@ -74,21 +58,24 @@ function Profile() {
   });
 
   useEffect(() => {
-    getUser()
-      .then((res) => {
-        setValue("email", res.email, { shouldTouch: true });
-        setValue("name", res.name, { shouldTouch: true });
-        setValue("description", res.description, { shouldTouch: true });
-        setPassword("");
-        setInitialState({
-          email: res.email,
-          password: "",
-          description: res.description,
-          name: res.name,
-        });
-      })
-      .catch((error) => console.log(error));
-  }, []);
+    if (user) {
+      dispatch(getUser(user.access_token))
+        .unwrap()
+        .then((res) => {
+          setValue("email", res.email, { shouldTouch: true });
+          setValue("name", res.name, { shouldTouch: true });
+          setValue("description", res.description, { shouldTouch: true });
+          setPassword("");
+          setInitialState({
+            email: res.email,
+            password: "",
+            description: res.description,
+            name: res.name,
+          });
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [user]);
 
   const valueToSubmitChecker = (initialState: UserUpdate, user: UserUpdate) => {
     const newuser = user;
@@ -104,59 +91,32 @@ function Profile() {
     return newuser;
   };
 
-  const fetchUpdateUser = async (data: UserUpdate) => {
-    if (user) {
-      const config = {
-        headers: {
-          Authorization: "Bearer " + user.access_token,
-        },
-      };
-
-      const res = await axios.patch(
-        `${import.meta.env.VITE_PORT}/users/profile`,
-        data,
-        config
-      );
-
-      return res.data;
-    }
-  };
-
   const onSubmit = (data: UserUpdate) => {
-    const dataToSubmit = valueToSubmitChecker(initialState, data);
-
-    fetchUpdateUser(dataToSubmit)
-      .then(() => {
-        notifyUpdate();
-        navigate("/");
-      })
-      .catch((error) => {
-        if (error.response.status) {
-          if (error.response.status === 403) {
-            notifyError("Email is already taken!");
-          } else {
-            notifyError("Update failed!");
-          }
-        } else {
-          alert(error);
-        }
-      });
-  };
-
-  const fetchDeleteAccount = async () => {
     if (user) {
-      const config = {
-        headers: {
-          Authorization: "Bearer " + user.access_token,
-        },
+      const dataToSubmit = valueToSubmitChecker(initialState, data);
+
+      const dataToSend = {
+        data: dataToSubmit,
+        token: user,
       };
 
-      const res = await axios.delete(
-        `${import.meta.env.VITE_PORT}/users/profile`,
-        config
-      );
-
-      return res.data;
+      dispatch(updateUser(dataToSend))
+        .unwrap()
+        .then(() => {
+          notifyUpdate();
+          navigate("/");
+        })
+        .catch((error) => {
+          if (error.response.status) {
+            if (error.response.status === 403) {
+              notifyError("Email is already taken!");
+            } else {
+              notifyError("Update failed!");
+            }
+          } else {
+            alert(error);
+          }
+        });
     }
   };
 
@@ -173,16 +133,19 @@ function Profile() {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetchDeleteAccount()
-          .then(() => {
-            navigate("/");
-            localStorage.removeItem("tokens");
-            refreshPage();
-          })
-          .catch((error) => {
-            console.log(error);
-            alert(error);
-          });
+        if (user) {
+          dispatch(deleteUser(user.access_token))
+            .unwrap()
+            .then(() => {
+              navigate("/");
+              localStorage.removeItem("tokens");
+              refreshPage();
+            })
+            .catch((error) => {
+              console.log(error);
+              alert(error);
+            });
+        }
       }
     });
   };
