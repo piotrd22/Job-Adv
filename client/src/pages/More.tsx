@@ -72,23 +72,6 @@ function More() {
     return res.data;
   };
 
-  const getUser = async () => {
-    if (user) {
-      const config = {
-        headers: {
-          Authorization: "Bearer " + user.access_token,
-        },
-      };
-
-      const res = await axios.get(
-        `${import.meta.env.VITE_PORT}/users/profile`,
-        config
-      );
-
-      return res.data;
-    }
-  };
-
   const getUserById = async (id: number) => {
     const res = await axios.get(`${import.meta.env.VITE_PORT}/users/${id}`);
     return res.data;

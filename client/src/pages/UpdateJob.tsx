@@ -15,7 +15,6 @@ function UpdateJob() {
 
   const getJob = async () => {
     const res = await axios.get(`${import.meta.env.VITE_PORT}/jobs/${id}`);
-
     return res.data;
   };
 
@@ -53,24 +52,6 @@ function UpdateJob() {
       progress: undefined,
       theme: "dark",
     });
-  };
-
-  const fetchUpdateJob = async (data: JobForm) => {
-    if (user) {
-      const config = {
-        headers: {
-          Authorization: "Bearer " + user.access_token,
-        },
-      };
-
-      const res = await axios.patch(
-        `${import.meta.env.VITE_PORT}/jobs/${id}`,
-        data,
-        config
-      );
-
-      return res.data;
-    }
   };
 
   const {

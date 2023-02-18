@@ -75,6 +75,18 @@ export const jobSlice = createSlice({
   name: "job",
   initialState,
   reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getMyJobs.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getMyJobs.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(getMyJobs.rejected, (state) => {
+        state.isLoading = false;
+      });
+  },
 });
 
 export default jobSlice.reducer;
