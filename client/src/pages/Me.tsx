@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import OneJob from "../components/OneJob";
+import { getMyJobs } from "../features/job/jobSlice";
 import { Job } from "../types/Job";
 import { User } from "../types/User";
 
@@ -20,6 +21,8 @@ function Me() {
   });
   const [jobs, setJobs] = useState([]);
 
+  const dispatch = useAppDispatch();
+
   const getUser = async () => {
     if (user) {
       const config = {
@@ -37,23 +40,6 @@ function Me() {
     }
   };
 
-  const getMyJobs = async () => {
-    if (user) {
-      const config = {
-        headers: {
-          Authorization: "Bearer " + user.access_token,
-        },
-      };
-
-      const res = await axios.get(
-        `${import.meta.env.VITE_PORT}/jobs/my`,
-        config
-      );
-
-      return res.data;
-    }
-  };
-
   useEffect(() => {
     getUser()
       .then((res: User) => {
@@ -63,11 +49,14 @@ function Me() {
   }, []);
 
   useEffect(() => {
-    getMyJobs()
-      .then((res) => {
-        setJobs(res);
-      })
-      .catch((error) => console.log(error));
+    if (user) {
+      dispatch(getMyJobs(user.access_token))
+        .unwrap()
+        .then((res) => {
+          setJobs(res);
+        })
+        .catch((error) => console.log(error));
+    }
   });
 
   const jobComponents = jobs?.map((job: Job) => (

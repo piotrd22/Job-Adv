@@ -6,8 +6,9 @@ import { ImBin, ImOffice } from "react-icons/im";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import { useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import Loader from "../components/Loader";
+import { deleteJob } from "../features/job/jobSlice";
 import { Job } from "../types/Job";
 import { User } from "../types/User";
 
@@ -39,6 +40,7 @@ function More() {
   });
 
   const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
   const notify = () =>
     toast.success("Job has been deleted!", {
@@ -80,23 +82,6 @@ function More() {
 
       const res = await axios.get(
         `${import.meta.env.VITE_PORT}/users/profile`,
-        config
-      );
-
-      return res.data;
-    }
-  };
-
-  const deleteJob = async () => {
-    if (user) {
-      const config = {
-        headers: {
-          Authorization: "Bearer " + user.access_token,
-        },
-      };
-
-      const res = await axios.delete(
-        `${import.meta.env.VITE_PORT}/jobs/${job.id}`,
         config
       );
 
@@ -161,15 +146,23 @@ function More() {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        deleteJob()
-          .then(() => {
-            notify();
-            navigate("/");
-          })
-          .catch((error) => {
-            notifyError();
-            console.log(error);
-          });
+        if (user) {
+          const dataToSend = {
+            token: user,
+            jobId: job.id,
+          };
+
+          dispatch(deleteJob(dataToSend))
+            .unwrap()
+            .then(() => {
+              notify();
+              navigate("/");
+            })
+            .catch((error) => {
+              notifyError();
+              console.log(error);
+            });
+        }
       }
     });
   };

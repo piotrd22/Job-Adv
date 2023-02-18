@@ -3,13 +3,15 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { updateJob } from "../features/job/jobSlice";
 import { JobForm } from "../types/JobForm";
 
 function UpdateJob() {
   const id = useParams().id;
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
   const getJob = async () => {
     const res = await axios.get(`${import.meta.env.VITE_PORT}/jobs/${id}`);
@@ -87,16 +89,25 @@ function UpdateJob() {
   });
 
   const onSubmit = (data: JobForm) => {
-    fetchUpdateJob(data)
-      .then(() => {
-        notify();
-        navigate("/");
-        reset();
-      })
-      .catch((error) => {
-        notifyError();
-        console.log(error);
-      });
+    if (user && id) {
+      const dataToSend = {
+        token: user,
+        data: data,
+        jobId: id,
+      };
+
+      dispatch(updateJob(dataToSend))
+        .unwrap()
+        .then(() => {
+          notify();
+          navigate("/");
+          reset();
+        })
+        .catch((error) => {
+          notifyError();
+          console.log(error);
+        });
+    }
   };
 
   return (
